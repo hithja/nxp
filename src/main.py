@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-#! NXP Manager
+#! NXP Package Manager
 #! Made by hithja
 #! Under ... License
 
@@ -131,3 +131,5 @@ if __name__ == '__main__':
             remove(sys.argv[2])
     elif sys.argv[1] == '-l':
         list_pkg()
+    elif sys.argv[1] == '-v':
+        print('\x1B[3mNXP Package Manager v0.1.0b-25M6\x1B[0m')
