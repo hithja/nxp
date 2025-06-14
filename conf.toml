@@ -1,0 +1,4 @@
+[path]
+bin = "./installed/bin"
+cache = "./cache"
+nxpi = "./nxpi.toml"
