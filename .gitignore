@@ -1,0 +1,5 @@
+#! +=== Files ===+
+*.nxp
+#! +=== Folders ===+
+installed/
+cache/*
