@@ -2,7 +2,8 @@
 
 #! NXP Package Manager
 #! Made by hithja
-#! Under ... License
+#! Licensed under GPL-2.0
+#! See https://www.gnu.org/licenses/old-licenses/gpl-2.0.html for details
 
 import tarfile
 import toml
@@ -10,6 +11,7 @@ import sys
 import os
 import print_color as pc
 import shutil
+import stat
 from errors import *
 from utils import *
 
@@ -17,7 +19,7 @@ config = {}
 with open('conf.toml', 'r') as f:
     config = toml.loads(f.read())
 
-def unpack(package_name):
+def unpack(package_name, isinstall):
     try:
         file = tarfile.open(f'{package_name}.nxp') 
 
@@ -35,20 +37,26 @@ def unpack(package_name):
             info_file = toml.loads(info_file_loaded)
         pc.print(f'{info_file['name']} v{info_file['version']} unpacked!', tag='success', tag_color='green', color='white')
 
-        print("Binaries: ")
-        for i in os.listdir(f'{config['path']['cache']}/{package_name}/bin'):
-            print('\t- ' + i + ' > ' + get_size(f'{config['path']['cache']}/{package_name}/bin'))
+        if isinstall:
+            print("Binaries: ")
+            for i in os.listdir(f'{config['path']['cache']}/{package_name}/bin'):
+                print('\t- ' + i + ' > ' + get_size(f'{config['path']['cache']}/{package_name}/bin/{i}'))
         
-        if (info_file['dep']): 
-            print("Dependencies: ")
-            for i in info_file['dep']:
-                if i:
-                    print('\t- ' + i)
+            if (info_file['dep']): 
+                print("Dependencies: ")
+                for i in info_file['dep']:
+                    if i:
+                        print('\t- ' + i)
 
-        yn = input(f'\033[33m[?]\033[0m Do you want to install {package_name} [Y/n]: ')
-        if str(yn).lower() == 'y':
-            install(package_name)
+            yn = input(f'\033[33m[?]\033[0m Do you want to install {package_name} [Y/n]: ')
+            if str(yn).lower() == 'y':
+                install(package_name)
+            else:
+                shutil.rmtree(f'{config['path']['cache']}/{package_name}')
         else:
+            print(f'+=== \033[1m{info_file['name']}\033[0m ===+')
+            print(f'Version: {info_file['version']}')
+            print(f'Author: {info_file['author']}')
             shutil.rmtree(f'{config['path']['cache']}/{package_name}')
     except:
         catch_err(11)
@@ -58,6 +66,8 @@ def install(pkg):
     for i in os.listdir(f'{config['path']['cache']}/{pkg}/bin'):
         bins.append(i)
         shutil.copyfile(f'{config['path']['cache']}/{pkg}/bin/{i}', f'{config['path']['bin']}/{i}')
+        st = os.stat(f'{config['path']['bin']}/{i}')
+        os.chmod(f'{config['path']['bin']}/{i}', st.st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
     
     try:
         with open(f'{config['path']['cache']}/{pkg}/meta.toml', 'r') as file:
@@ -71,7 +81,7 @@ def install(pkg):
                     pkg_info = toml.loads(packages)
             except:
                 catch_err(21)
-            pkg_info.update({f'{info_file['name']}': {'version': f'{info_file['version']}', 'author': f'{info_file['author']}', 'binaries': bins}})
+            pkg_info.update({f'{info_file['name']}': {'version': f'{info_file['version']}', 'author': f'{info_file['author']}', 'binaries': bins, 'scripts': []}})
             with open(f'{config['path']['nxpi']}', 'w') as f:
                 toml.dump(pkg_info, f)
     except:
@@ -99,11 +109,11 @@ def remove(pkg):
             packages = f.read()
             pkg_info = toml.loads(packages)
     except:
-        catch_err(40)
+        catch_err(40) 
 
     print('Binaries to delete: ')
     for i in pkg_info[pkg]['binaries']:
-        print(f'\t- {i}')
+        print(f'\t- {i} > {get_size(f'{config['path']['bin']}/{i}')}')
     
     delete = input(f'\033[33m[?]\033[0m Do you want to delete this binaries [Y/n]: ')
     for i in pkg_info[pkg]['binaries']:
@@ -123,13 +133,34 @@ def remove(pkg):
     pc.print(f'{pkg} was deleted!', tag='success', tag_color='green', color='white')
 
 if __name__ == '__main__':
-    if sys.argv[1] == '-i':
-        if len(sys.argv[2]) > 0:
-            unpack(sys.argv[2])
-    elif sys.argv[1] == '-r':
-        if len(sys.argv[2]) > 0:
-            remove(sys.argv[2])
-    elif sys.argv[1] == '-l':
-        list_pkg()
-    elif sys.argv[1] == '-v':
-        print('\x1B[3mNXP Package Manager v0.1.0b-25M6\x1B[0m')
+    create_deps(config)
+
+    args = {
+        'i': ['-i', '--install'],
+        'r': ['-r', '--remove'],
+        'l': ['-l', '--list'],
+        'I': ['-I', '--info'],
+        'h': ['-h', '--help'],
+        'v': ['-v', '--version']
+    }
+
+    if len(sys.argv) > 1:
+        if sys.argv[1] in args['i']:
+            if len(sys.argv[2]) > 0:
+                unpack(sys.argv[2], True)
+        elif sys.argv[1] in args['r']:
+            if len(sys.argv[2]) > 0:
+                remove(sys.argv[2])
+        elif sys.argv[1] in args['l']:
+            list_pkg()
+        elif sys.argv[1] in args['I']:
+            if len(sys.argv[2]) > 0:
+                unpack(sys.argv[2], False)
+        elif sys.argv[1] in args['h']:
+            help(config)
+        elif sys.argv[1] in args['v']:
+            print(f'\x1B[3m{config['info']['name'].upper()} Package Manager {config['info']['version']}-{config['info']['codev']}\x1B[0m')
+        else:
+            pc.print(f'Invalid Argument!', tag='ERR', tag_color='red', color='white')
+    else:
+        pc.print(f'No Arguments!', tag='ERR', tag_color='red', color='white')

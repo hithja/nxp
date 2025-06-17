@@ -1,5 +1,10 @@
 #! +=== Files ===+
 *.nxp
+*.nxpi
+main.spec
 #! +=== Folders ===+
 installed/
-cache/*
+cache/
+build/
+dist/
+scripts/

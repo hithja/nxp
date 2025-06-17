@@ -1,0 +1,14 @@
+\033[1m\x1B[3m\033[32m\tNXP Package Manager\x1B[0m\033[0m
+
+\033[32m+===== Package =====+\033[0m
+-i; --install - installs \x1B[3m'.nxp'\x1B[0m file
+-r; --remove - removes installed package
+-l; --list - lists all installed packages
+-I; --info - outputs info about package
+
+\033[32m+===== Other =====+\033[0m
+-v; --version - outputs version of NXP 
+-h; --help - outputs this page =)
+
+\033[32m+===== Error Codes =====+\033[0m
+You can see all error codes at \x1B[3m'README.md'\x1B[0m

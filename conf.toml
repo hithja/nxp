@@ -1,4 +1,10 @@
+[info]
+name = "nxp"
+version = "v0.1.2b"
+codev = "252517"
+
 [path]
 bin = "./installed/bin"
 cache = "./cache"
-nxpi = "./nxpi.toml"
+nxpi = "./.nxpi"
+help-file = "./help.txt"
