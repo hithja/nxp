@@ -2,144 +2,26 @@
 
 #! NXP Package Manager
 #! Made by hithja
-#! Licensed under GPL-2.0
-#! See https://www.gnu.org/licenses/old-licenses/gpl-2.0.html for details
 
-import tarfile
-import toml
 import sys
-import os
 import print_color as pc
-import shutil
-import stat
+from settings import *
 from errors import *
 from utils import *
-
-config = {}
-with open('conf.toml', 'r') as f:
-    config = toml.loads(f.read())
-
-def unpack(package_name, isinstall):
-    try:
-        file = tarfile.open(f'{package_name}.nxp') 
-
-        file.extractall(config['path']['cache'], filter='data') 
-        file.close()
-    except:
-        catch_err(10)
-
-    pc.print('Unpacking app...')
-    info_file = {}
-    
-    try:
-        with open(f'{config['path']['cache']}/{package_name}/meta.toml', 'r') as file:
-            info_file_loaded = file.read()
-            info_file = toml.loads(info_file_loaded)
-        pc.print(f'{info_file['name']} v{info_file['version']} unpacked!', tag='success', tag_color='green', color='white')
-
-        if isinstall:
-            print("Binaries: ")
-            for i in os.listdir(f'{config['path']['cache']}/{package_name}/bin'):
-                print('\t- ' + i + ' > ' + get_size(f'{config['path']['cache']}/{package_name}/bin/{i}'))
-        
-            if (info_file['dep']): 
-                print("Dependencies: ")
-                for i in info_file['dep']:
-                    if i:
-                        print('\t- ' + i)
-
-            yn = input(f'\033[33m[?]\033[0m Do you want to install {package_name} [Y/n]: ')
-            if str(yn).lower() == 'y':
-                install(package_name)
-            else:
-                shutil.rmtree(f'{config['path']['cache']}/{package_name}')
-        else:
-            print(f'+=== \033[1m{info_file['name']}\033[0m ===+')
-            print(f'Version: {info_file['version']}')
-            print(f'Author: {info_file['author']}')
-            shutil.rmtree(f'{config['path']['cache']}/{package_name}')
-    except:
-        catch_err(11)
-
-def install(pkg):
-    bins = []
-    for i in os.listdir(f'{config['path']['cache']}/{pkg}/bin'):
-        bins.append(i)
-        shutil.copyfile(f'{config['path']['cache']}/{pkg}/bin/{i}', f'{config['path']['bin']}/{i}')
-        st = os.stat(f'{config['path']['bin']}/{i}')
-        os.chmod(f'{config['path']['bin']}/{i}', st.st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
-    
-    try:
-        with open(f'{config['path']['cache']}/{pkg}/meta.toml', 'r') as file:
-            info_file_loaded = file.read()
-            info_file = toml.loads(info_file_loaded)
-
-            pkg_info = {}
-            try:
-                with open(f'{config['path']['nxpi']}', 'r') as f:
-                    packages = f.read()
-                    pkg_info = toml.loads(packages)
-            except:
-                catch_err(21)
-            pkg_info.update({f'{info_file['name']}': {'version': f'{info_file['version']}', 'author': f'{info_file['author']}', 'binaries': bins, 'scripts': []}})
-            with open(f'{config['path']['nxpi']}', 'w') as f:
-                toml.dump(pkg_info, f)
-    except:
-        catch_err(20)
-
-    shutil.rmtree(f'{config['path']['cache']}/{pkg}')
-    pc.print('Installed!', tag='success', tag_color='green', color='white')
-
-def list_pkg():
-    pkg_info = {}
-    try:
-        with open(f'{config['path']['nxpi']}', 'r') as f:
-            packages = f.read()
-            pkg_info = toml.loads(packages)
-    except:
-        catch_err(30)
-    
-    for i in pkg_info:
-        print(f'Package: {i}\tVersion: {pkg_info[i]['version']}\tAuthor: {pkg_info[i]['author']}')
-    
-def remove(pkg):
-    pkg_info = {}
-    try:
-        with open(f'{config['path']['nxpi']}', 'r') as f:
-            packages = f.read()
-            pkg_info = toml.loads(packages)
-    except:
-        catch_err(40) 
-
-    print('Binaries to delete: ')
-    for i in pkg_info[pkg]['binaries']:
-        print(f'\t- {i} > {get_size(f'{config['path']['bin']}/{i}')}')
-    
-    delete = input(f'\033[33m[?]\033[0m Do you want to delete this binaries [Y/n]: ')
-    for i in pkg_info[pkg]['binaries']:
-        if delete.lower() == 'y':
-            try:
-                os.remove(f'{config['path']['bin']}/{i}')
-            except:
-                print('Nothing to delete!')
-                exit()
-    try:
-        del pkg_info[pkg]
-        with open(f'{config['path']['nxpi']}', 'w') as f:
-            toml.dump(pkg_info, f)
-    except:
-        catch_err(41)
-    
-    pc.print(f'{pkg} was deleted!', tag='success', tag_color='green', color='white')
+from pkg_actions import *
 
 if __name__ == '__main__':
-    create_deps(config)
+    create_deps()
 
     args = {
         'i': ['-i', '--install'],
+        'u': ['-u', '--update'],
         'r': ['-r', '--remove'],
+        'run': ['--run'],
         'l': ['-l', '--list'],
+        's': ['-s', '--search'],
         'I': ['-I', '--info'],
+        'bp': ['-bp', '--build-package'],
         'h': ['-h', '--help'],
         'v': ['-v', '--version']
     }
@@ -147,17 +29,31 @@ if __name__ == '__main__':
     if len(sys.argv) > 1:
         if sys.argv[1] in args['i']:
             if len(sys.argv[2]) > 0:
-                unpack(sys.argv[2], True)
+                install(sys.argv[2])
+        elif sys.argv[1] in args['u']:
+            if len(sys.argv) > 3:
+                update(sys.argv[2])
+            else:
+                update("")
         elif sys.argv[1] in args['r']:
             if len(sys.argv[2]) > 0:
                 remove(sys.argv[2])
         elif sys.argv[1] in args['l']:
             list_pkg()
+        elif sys.argv[1] in args['run']:
+            if len(sys.argv[2]) > 0:
+                run(sys.argv[2])
+        elif sys.argv[1] in args['s']:
+            if len(sys.argv[2]) > 0:
+                search_pkg(sys.argv[2])
         elif sys.argv[1] in args['I']:
             if len(sys.argv[2]) > 0:
-                unpack(sys.argv[2], False)
+                info(sys.argv[2])
         elif sys.argv[1] in args['h']:
-            help(config)
+            help()
+        elif sys.argv[1] in args['bp']:
+            if len(sys.argv[2]) > 0:
+                build_pkg(sys.argv[2])
         elif sys.argv[1] in args['v']:
             print(f'\x1B[3m{config['info']['name'].upper()} Package Manager {config['info']['version']}-{config['info']['codev']}\x1B[0m')
         else:

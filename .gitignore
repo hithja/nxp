@@ -1,10 +1,9 @@
 #! +=== Files ===+
 *.nxp
 *.nxpi
+*.lua
 main.spec
 #! +=== Folders ===+
-installed/
-cache/
 build/
 dist/
-scripts/
+edit/

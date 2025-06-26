@@ -1,10 +1,15 @@
 [info]
-name = "nxp"
-version = "v0.1.2b"
-codev = "252517"
+name="NXP"
+version="v1.0.0"
+codev="252518"
+
+[repos]
+def-repo="https://raw.githubusercontent.com/hithja/nxp-repo/main" #! Don't touch this
 
 [path]
-bin = "./installed/bin"
-cache = "./cache"
-nxpi = "./.nxpi"
-help-file = "./help.txt"
+bin="~/.bin"
+cache=".cache"
+conf-folder="~/.config/nxp"
+nxpi=".nxpi"
+conf-file=".nxprc"
+help-file="./help.txt"
