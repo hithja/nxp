@@ -24,6 +24,7 @@
 ## ErrCodes 6x (Connections and Repos Errors)
 - 60 - unable to get repo
 - 61 - connection error
+- 62 - unable to update package
 
 ## ErrCodes 7x (Errors with starting app)
 - 70 - unable to start app

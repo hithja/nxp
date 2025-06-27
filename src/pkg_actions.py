@@ -209,8 +209,18 @@ def info(pkg):
         get_info_table(info_file)
         shutil.rmtree(f'{config['path']['cache']}/{pkg}')
 
-def run(pkg):
-    try:           
-        subprocess.run(os.path.expanduser(f'{config['path']['bin']}/{pkg}'))
+def update_nxp():
+    print('Getting install.sh...')
+    try:
+        url = "https://raw.githubusercontent.com/hithja/nxp/master/install.sh"
+        subprocess.run(f"sudo curl {url} | sudo bash", shell=True)
+    except:
+        catch_err(62)
+
+
+def run(pkg, args):
+    try:
+        print(os.path.expanduser(f'{config['path']['bin']}/{pkg}'))
+        subprocess.run([os.path.expanduser(f'{config['path']['bin']}/{pkg}')] + args)
     except:
         catch_err(70)

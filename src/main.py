@@ -16,8 +16,9 @@ if __name__ == '__main__':
     args = {
         'i': ['-i', '--install'],
         'u': ['-u', '--update'],
-        'r': ['-r', '--remove'],
-        'run': ['--run'],
+        'U': ['-U', '--upgrade'],
+        'p': ['-p', '--purge'],
+        'r': ['-r', '--run'],
         'l': ['-l', '--list'],
         's': ['-s', '--search'],
         'I': ['-I', '--info'],
@@ -35,14 +36,20 @@ if __name__ == '__main__':
                 update(sys.argv[2])
             else:
                 update("")
-        elif sys.argv[1] in args['r']:
+        elif sys.argv[1] in args['U']:
+            update_nxp()
+        elif sys.argv[1] in args['p']:
             if len(sys.argv[2]) > 0:
                 remove(sys.argv[2])
         elif sys.argv[1] in args['l']:
             list_pkg()
-        elif sys.argv[1] in args['run']:
+        elif sys.argv[1] in args['r']:
             if len(sys.argv[2]) > 0:
-                run(sys.argv[2])
+                args = []
+                for i in sys.argv:
+                    if not i in [sys.argv[0], sys.argv[1], sys.argv[2]]:
+                        args.append(i)
+                run(sys.argv[2], args)
         elif sys.argv[1] in args['s']:
             if len(sys.argv[2]) > 0:
                 search_pkg(sys.argv[2])

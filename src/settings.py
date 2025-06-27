@@ -4,7 +4,7 @@ import os
 config = {
     "info": {
         "name": "NXP",
-        "version": "v1.0.1",
+        "version": "v1.1.0",
         "codev": "252627"
     },
     "repos": {

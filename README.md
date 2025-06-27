@@ -3,17 +3,24 @@ NXP is a package manager for linux made on Python.
 NXP has own [repository](https://github.com/hithja/nxp-repo) and package format (`.nxp`).
 NXP Packages can execute Lua-scripts before installing.
 # Content
-1. [Starting](#starting)
+1. [Installation](#installation)
+2. [Starting](#starting)
     1. [Installing package](#installing-package)
     2. [Getting all installed packages](#getting-all-installed-packages)
     3. [Arguments](#arguments)
-2. [How to build](#how-to-build)
-3. [How to make own package]()
-4. [Errors](#errors)
+3. [How to build](#how-to-build)
+4. [How to make own package]()
+5. [Errors](#errors)
+
+# Installation
+There are 3 ways to download NXP:
+1. Type `sudo curl https://raw.githubusercontent.com/hithja/nxp/master/install.sh | sudo bash` to install NXP.
+2. You can download [`install.sh`](https://github.com/hithja/nxp/blob/master/install.sh). 
+3. If you don't want to download NXP from scripts you can visit [`GitHub releases`](https://github.com/hithja/nxp/releases).
 
 # Starting
 ## Installing package
-To install package in nxp, type `nxp -i <pkg name>`. This command will be install package from repository. If you downloaded `.nxp` package and you want to install it, type `nxp -i <pkg name>.nxp`.
+To install package in NXP, type `nxp -i <pkg name>`. This command will be install package from repository. If you downloaded `.nxp` package and you want to install it, type `nxp -i <pkg name>.nxp`.
 
 ## Getting all installed packages
 To get all installed packages, type `nxp -l`.
@@ -24,7 +31,7 @@ pkg => Version: 15.0  Author: You
 
 ## Arguments
 - `-i; --install` - installs package
-- `-r; --remove` - removes package
+- `-p; --purge` - removes package
 - `-u; --update` - updates packages
 - `-l; --list` - outputs all installed packages
 - `-h; --help` - outputs help page

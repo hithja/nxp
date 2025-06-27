@@ -49,8 +49,9 @@ Package Format Version: 0.2
 \033[32m+===== Package =====+\033[0m
 -i; --install - installs package from repo or from \x1B[3m'.nxp'\x1B[0m file
 -u; --update - updates all/one packages to newer version
--r; --remove - removes installed package
---run - runs app
+-U; --upgrade - upgrades nxp to newer version
+-p; --purge - removes installed package
+-r; --run - runs app
 -l; --list - outputs all installed packages
 -s; --search - searchs package in repo
 -I; --info - outputs info about package
