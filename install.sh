@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION="v1.0.1"
+VERSION="v1.1.0"
 INSTALL_PATH="/usr/bin/nxp"
 DOWNLOAD_URL="https://github.com/hithja/nxp/releases/download/$VERSION/nxp"
 
