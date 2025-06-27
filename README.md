@@ -34,7 +34,7 @@ pkg => Version: 15.0  Author: You
 First, install all requirements (requirements.txt).
 Then type 
 ```sh
-pyinstaller ./src/main.py --onefile --add-data "conf.toml:." --add-data "help.txt:." --add-data "YOUR_LUPA_PATH"
+pyinstaller ./src/main.py --onefile --add-data "YOUR_LUPA_PATH"
 ```
 After successfuly building type `./dist/main -v`. If it works, you build it successfuly.
 

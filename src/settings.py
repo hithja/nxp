@@ -1,9 +1,22 @@
 import toml
 import os
-#! Global variables are here!
 
-config = {}
-with open('conf.toml', 'r') as f:
-    config = toml.loads(f.read())
+config = {
+    "info": {
+        "name": "NXP",
+        "version": "v1.0.1",
+        "codev": "252627"
+    },
+    "repos": {
+        "def-repo": "https://raw.githubusercontent.com/hithja/nxp-repo/main"
+    },
+    "path": {
+        "bin": "~/.bin",
+        "cache": ".cache",
+        "conf-folder": "~/.config/nxp",
+        "nxpi": ".nxpi",
+        "conf-file": ".nxprc",
+    }
+}
 
 USER=os.getlogin()
